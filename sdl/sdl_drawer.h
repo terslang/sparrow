@@ -12,7 +12,6 @@
 #include "sdl_drawer_interface.h"
 #include <unistd.h>
 
-using namespace std;
 namespace simple_browser_sdldrawer {
 
 struct ResourcesStruct {
@@ -49,7 +48,7 @@ public:
     }
 
     bool init_sdldrawer() {
-        string message;
+        std::string message;
 
         if (!(res.window = SDL_CreateWindow("My Awesome Browser", 
             SDL_WINDOWPOS_CENTERED, 0,

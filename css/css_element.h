@@ -6,25 +6,25 @@
 #include <iostream>
 #include <cstdint>
 
-using namespace std;
+
 
 namespace simple_browser_css {
 
 struct Selector {
-    string id;
-    string tag;
-    vector<string> class_list;
+    std::string id;
+    std::string tag;
+    std::vector<std::string> class_list;
 
-    string to_string();
+    std::string to_string();
 };
 
 struct Keyword {
-    string keyword;
+    std::string keyword;
 };
 
 struct Length {
     float data;
-    string unit;
+    std::string unit;
 };
 
 struct Color {
@@ -44,12 +44,12 @@ struct Value {
     ValueType type;    
     union {
         struct {
-            string keyword;            
+            std::string keyword;
         } Keyword;
 
         struct {
             float data;
-            string unit;
+            std::string unit;
         } Length;
 
         struct {
@@ -60,33 +60,33 @@ struct Value {
         } Color;
     };
 
-    Value(const string& kwd);
-    Value(const tuple<float, string>& length);
-    Value(const tuple<uint8_t, uint8_t, uint8_t, uint8_t>& color);
+    Value(const std::string& kwd);
+    Value(const std::tuple<float, std::string>& length);
+    Value(const std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>& color);
     Value(const Value& v);
     Value();
     ~Value();
 
     bool operator==(const Value& v);
     float to_px() const;
-    string to_string();
+    std::string to_string();
 };
 
 struct Declaration {
-    string name;
+    std::string name;
     struct Value value;
 
-    Declaration(const string& name, const string& kwd);
-    Declaration(const string& name, const tuple<float, string>& length);
-    Declaration(const string& name, const tuple<uint8_t, uint8_t, uint8_t, uint8_t>& color);
+    Declaration(const std::string& name, const std::string& kwd);
+    Declaration(const std::string& name, const std::tuple<float, std::string>& length);
+    Declaration(const std::string& name, const std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>& color);
     Declaration(const Declaration& de);
-    string to_string();
+    std::string to_string();
 };
 
 struct Rule {
-    vector<Selector> selectors;
-    vector<Declaration> declarations;
-    Rule(vector<Selector> selectors, vector<Declaration> declarations):
+    std::vector<Selector> selectors;
+    std::vector<Declaration> declarations;
+    Rule(std::vector<Selector> selectors, std::vector<Declaration> declarations):
         selectors(selectors), declarations(declarations) {}
 
     void print(bool is_last_rule);

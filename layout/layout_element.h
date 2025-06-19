@@ -1,7 +1,6 @@
 #pragma once
 #include <cstring>
 #include <string>
-using namespace std;
 namespace simple_browser_layout {
 
 struct Rect {
@@ -10,11 +9,11 @@ struct Rect {
     float width;
     float height;
 
-    string to_string() {
+    std::string to_string() {
         char buf[64];
         memset(buf, 0, sizeof(buf));
         snprintf(buf, sizeof(buf), "%f %f %f %f", x, y, width, height);
-        return string(buf);
+        return std::string(buf);
     }
 };
 
@@ -24,11 +23,11 @@ struct Edge {
     float top;
     float bottom;
 
-    string to_string() {
+    std::string to_string() {
         char buf[64];
         memset(buf, 0, sizeof(buf));
         snprintf(buf, sizeof(buf), "%f %f %f %f", left, right, top, bottom);
-        return string(buf);
+        return std::string(buf);
     }
 };
 
@@ -38,16 +37,16 @@ struct Box {
     struct Edge border;
     struct Edge margin;
 
-    string get_content() {
+    std::string get_content() {
         return "content-xywh: " + content.to_string();
     }
-    string get_padding() {
+    std::string get_padding() {
         return "padding-lrtb: " + padding.to_string();
     }
-    string get_border() {
+    std::string get_border() {
         return "border-lrtb: " + border.to_string();
     }
-    string get_margin() {
+    std::string get_margin() {
         return "margin-lrtb: " + margin.to_string();
     }
 };

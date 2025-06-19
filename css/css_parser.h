@@ -4,21 +4,20 @@
 #include <iostream>
 
 using namespace simple_browser;
-using namespace std;
 
 namespace simple_browser_css {
 
 class CssParser: public BaseParser {
 
     public:
-    CssParser(string& source): BaseParser(source) {}
+    CssParser(std::string& source): BaseParser(source) {}
 
-    vector<Rule> parse_css_rules();
+    std::vector<Rule> parse_css_rules();
     Rule parse_css_rule();
-    vector<Selector> parse_selectors();
+    std::vector<Selector> parse_selectors();
     Selector parse_selector();
-    vector<Declaration> parse_declarations();
+    std::vector<Declaration> parse_declarations();
     Declaration parse_declaration();
-    tuple<uint8_t, uint8_t, uint8_t, uint8_t> color_trans(string& hex_color);
+    std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> color_trans(std::string& hex_color);
 };
 }
