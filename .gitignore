@@ -2,7 +2,10 @@
 *.o
 *.til
 *.txt
+!CMakeLists.txt
 *.d
 *.out
 .vscode/*
 .git/*
+
+build/
