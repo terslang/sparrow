@@ -26,7 +26,6 @@ typedef struct Font_Draw_Info {
     SDL_Color background_color;
 } Font_Draw_Info;
 
-using namespace std;
 class FontManager {
 public:
     FT_Library ft_lib;
@@ -38,11 +37,11 @@ public:
     ~FontManager();
     void set_font_size(int size);
     void restore_default_font_size();
-    tuple<int, int> get_string_width_length(wstring str);
-    void draw_string(wstring str, Font_Color color, Font_Position start_position, 
-        vector<Font_Draw_Info>& font_list, SDL_Renderer *render);
-    wstring convert_to_wstring(string str);
+    std::tuple<int, int> get_string_width_length(std::wstring str);
+    void draw_string(std::wstring str, Font_Color color, Font_Position start_position,
+        std::vector<Font_Draw_Info>& font_list, SDL_Renderer *render);
+    std::wstring convert_to_wstring(std::string str);
 private:
-    void draw_font(wchar_t ch, Font_Color color, Font_Position& position, 
-        vector<Font_Draw_Info>& font_list, SDL_Renderer *render);
+    void draw_font(wchar_t ch, Font_Color color, Font_Position& position,
+        std::vector<Font_Draw_Info>& font_list, SDL_Renderer *render);
 };

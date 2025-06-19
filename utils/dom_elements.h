@@ -1,9 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
-using namespace std;
-    
-const vector<string> block_elements = {
+
+const std::vector<std::string> block_elements = {
     "address",
     "article",
     "aside",
@@ -40,7 +39,7 @@ const vector<string> block_elements = {
     "video",
 };
 
-const vector<string> inline_elements = {
+const std::vector<std::string> inline_elements = {
     "a",
     "abbr",
     "acronym",

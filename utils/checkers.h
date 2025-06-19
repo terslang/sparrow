@@ -5,7 +5,6 @@
 #include <vector>
 #include <cstdarg>
 
-using namespace std;
 
 __attribute__ ((weak))
 auto is_char = [](char c) -> bool {
@@ -35,12 +34,12 @@ auto is_hex = [](char c) -> bool {
 };
 
 __attribute__ ((weak))
-auto string_equal = [](const string& a, const string& b) -> bool {
+auto string_equal = [](const std::string& a, const std::string& b) -> bool {
     return a == b;
 };
 
 template<typename T, typename F>
-bool in_vector (const vector<T>& list, const T& elem, const F& f) {
+bool in_vector (const std::vector<T>& list, const T& elem, const F& f) {
     for (auto it = list.begin(); it != list.end(); ++it) {
         if (f(*it, elem)) {
             return true;
@@ -50,16 +49,16 @@ bool in_vector (const vector<T>& list, const T& elem, const F& f) {
 }
 
 __attribute__ ((weak))
-auto split_string = [](const string& source, const vector<char>& delimits) -> vector<string> {
-    vector<int> positions;
-    vector<string> ret;
+auto split_string = [](const std::string& source, const std::vector<char>& delimits) -> std::vector<std::string> {
+    std::vector<int> positions;
+    std::vector<std::string> ret;
     for (auto it = source.begin(); it != source.end(); ++it) {
         if (in_vector(delimits, *it, [](char a, char b) -> bool{return a == b;})) {
             positions.push_back(it - source.begin());
         }
     }
     int st;
-    vector<int>::iterator en;
+    std::vector<int>::iterator en;
 
     if (positions.size() > 0) {
         for (en = positions.begin(), st = 0; en <= positions.end(); st = *en + 1, ++en) {
@@ -72,7 +71,7 @@ auto split_string = [](const string& source, const vector<char>& delimits) -> ve
 };
 
 template<typename T, typename F, typename Q>
-bool exist_in_map(map<T, F>& mapping, const T& key, const F& val, const Q& op) {
+bool exist_in_map(std::map<T, F>& mapping, const T& key, const F& val, const Q& op) {
     auto it = mapping.find(key);
     if (it != mapping.end() && op(it->second, val)) {
         return true;
@@ -81,7 +80,7 @@ bool exist_in_map(map<T, F>& mapping, const T& key, const F& val, const Q& op) {
 }
 
 template<typename K, typename V>
-const V* find_in_map(const map<K, V>& mapping, const K& key) {
+const V* find_in_map(const std::map<K, V>& mapping, const K& key) {
     auto it = mapping.find(key);
     if (it == mapping.end()) {
         return nullptr;
@@ -90,7 +89,7 @@ const V* find_in_map(const map<K, V>& mapping, const K& key) {
 }
 
 template<typename K, typename V>
-const V* find_in_map_or_default(const map<K, V>& mapping, const vector<K>& keys, const V* defalut) {
+const V* find_in_map_or_default(const std::map<K, V>& mapping, const std::vector<K>& keys, const V* defalut) {
     const V* ret;
     for (auto pk = keys.cbegin(); pk != keys.cend(); ++pk) {
         if (ret = find_in_map(mapping, *pk)) {
@@ -101,8 +100,8 @@ const V* find_in_map_or_default(const map<K, V>& mapping, const vector<K>& keys,
 }
 
 template <typename T>
-vector<T> make_type_vector(int len, ...) {
-    vector<T> ret;
+std::vector<T> make_type_vector(int len, ...) {
+    std::vector<T> ret;
     va_list va_p;
     
     va_start(va_p, len);

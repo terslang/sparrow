@@ -3,7 +3,6 @@
 #include <SDL2/SDL_image.h>
 #include <vector>
 
-using namespace std;
 typedef struct RectEdge {
     int t;
     int r;

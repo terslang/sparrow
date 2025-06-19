@@ -13,7 +13,6 @@ typedef struct Fake_Box {
     float pen_y;
 } Fake_Box;
 
-using namespace std;
 using namespace simple_browser_style;
 namespace simple_browser_layout {
 
@@ -21,12 +20,12 @@ class LayoutNode : public StyleDomNode {
     public:
     BoxTypeEnum box_type;
     struct Box box;
-    vector<LayoutNode> child_list;
+    std::vector<LayoutNode> child_list;
 
     LayoutNode(BoxTypeEnum box_type, const StyleDomNode& node);
     LayoutNode(BoxTypeEnum box_type);
     LayoutNode();
-    void print_box_property(int32_t depth, bool is_last_child, vector<int32_t>& list);
+    void print_box_property(int32_t depth, bool is_last_child, std::vector<int32_t>& list);
 
 };
 

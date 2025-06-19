@@ -6,7 +6,6 @@
 #include "../utils/font_manager.h"
 
 using namespace simple_browser_layout;
-using namespace std;
 namespace simple_browser_sdldrawer {
 
 SDL_Rect convert_from_layout_rect(simple_browser_layout::Rect rect)
@@ -40,13 +39,13 @@ Rect_Edge convert_from_layout_edge(simple_browser_layout::Edge edge)
     };
 }
 
-vector<string> make_string_vector(int len, ...) {
-    vector<string> ret;
+std::vector<std::string> make_string_vector(int len, ...) {
+    std::vector<std::string> ret;
     va_list va_p;
     
     va_start(va_p, len);
     for (int i = 0; i < len; ++i) {
-        ret.push_back(string(va_arg(va_p, const char *)));
+        ret.push_back(std::string(va_arg(va_p, const char *)));
     }
     va_end(va_p);
     return ret;    
@@ -55,8 +54,8 @@ vector<string> make_string_vector(int len, ...) {
 class SdlDrawerInterface {
 
 public:
-    vector<Html_Rect> rect_list;
-    vector<Font_Draw_Info> font_list;
+    std::vector<Html_Rect> rect_list;
+    std::vector<Font_Draw_Info> font_list;
     FontManager& font_manager;
     SDL_Renderer *render;
 
@@ -74,7 +73,7 @@ public:
             .l = content_rect.rect.w,
         };
 
-        Value v = Value(make_tuple(TRANSPARENT));
+        Value v = Value(std::make_tuple(TRANSPARENT));
 
         content_rect.color = convert_from_css_color(*find_in_map_or_default(node.property_map, 
             make_string_vector(1, "background"), &v));
@@ -106,14 +105,14 @@ public:
         rect_list.push_back(border_rect);
 
         if (node.type == TEXT) {
-            Value transparent_color(make_tuple(TRANSPARENT));
-            Value black_color(make_tuple(BLACK));
+            Value transparent_color(std::make_tuple(TRANSPARENT));
+            Value black_color(std::make_tuple(BLACK));
 
-            if (const Value *tmp = find_in_map(node.property_map, string("font-size"))) {
+            if (const Value *tmp = find_in_map(node.property_map, std::string("font-size"))) {
                 font_manager.set_font_size(tmp->to_px());
             }
 
-            wstring text = font_manager.convert_to_wstring(node.text);
+            std::wstring text = font_manager.convert_to_wstring(node.text);
             font_manager.draw_string(text, 
                 Font_Color {
                     .font_color = *(SDL_Color *)(&find_in_map_or_default(node.property_map,
@@ -129,7 +128,7 @@ public:
             font_manager.restore_default_font_size();    
         }
 
-        for (vector<LayoutNode>::const_iterator it = node.child_list.begin();
+        for (std::vector<LayoutNode>::const_iterator it = node.child_list.begin();
             it != node.child_list.end(); ++it) {
             iterate_layout_tree(*it);
         }        

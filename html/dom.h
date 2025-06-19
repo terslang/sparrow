@@ -5,7 +5,6 @@
 #include <cstdio>
 #include <iostream>
 
-using namespace std;
 namespace simple_browser_html {
 
 enum DomNodeType {
@@ -16,14 +15,14 @@ enum DomNodeType {
 class DomNode {
     public:
     DomNodeType type;
-    vector<DomNode> child_list;
-    string text;
-    string tag_name;
-    map<string, string> attributes;
+    std::vector<DomNode> child_list;
+    std::string text;
+    std::string tag_name;
+    std::map<std::string, std::string> attributes;
 
     DomNode(){}
-    DomNode(const string& text): text(text), type(TEXT) {}
-    DomNode(const string& tag_name, const map<string, string>& attributes, const vector<DomNode>& child_list):
+    DomNode(const std::string& text): text(text), type(TEXT) {}
+    DomNode(const std::string& tag_name, const std::map<std::string, std::string>& attributes, const std::vector<DomNode>& child_list):
         tag_name(tag_name), attributes(attributes), type(ELEMENT), child_list(child_list) {}
     DomNode(const DomNode& dn) {
         switch (dn.type) {
@@ -37,7 +36,7 @@ class DomNode {
     }
     ~DomNode() {}
     
-    void print(int32_t depth, bool is_last_child, vector<int32_t>& list) const;
+    void print(int32_t depth, bool is_last_child, std::vector<int32_t>& list) const;
 };
 
 void print_dom_node(const DomNode& root, bool is_last_child);
