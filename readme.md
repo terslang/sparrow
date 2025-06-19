@@ -43,7 +43,7 @@ Let's take testcase/test.html and testcase/test.css as example.
 **The output of htmlprog:**
 
 ```
-$ ./htmlprog.out ../testcase/test.html
+$ ./htmlprog ../testcase/test.html
 └─<ELEMENT> html
   ├─<ELEMENT> head
   │ └─<ELEMENT> title
@@ -60,7 +60,7 @@ $ ./htmlprog.out ../testcase/test.html
 ```
 **The output of css:**
 ```
-$ ./cssprog.out ../testcase/test.css
+$ ./cssprog ../testcase/test.css
 ├─span
 │  └─display: inline
 ├─html
@@ -93,7 +93,7 @@ $ ./cssprog.out ../testcase/test.css
 ```
 **The output of style:**
 ```
-$ ./styleprog.out ../testcase/test.html ../testcase/test.css
+$ ./styleprog ../testcase/test.html ../testcase/test.css
 └─<ELEMENT> html
   background: 255 255 255 255
   border-color: 0 0 0 255
@@ -150,7 +150,7 @@ $ ./styleprog.out ../testcase/test.html ../testcase/test.css
 ```
 **The output of layout:**
 ```
-$ ./layoutprog.out ../testcase/test.html ../testcase/test.css
+$ ./layoutprog ../testcase/test.html ../testcase/test.css
 └─<ELEMENT> html
   INLINE
   content-xywh: 100.000000 11.000000 600.000000 460.000000
