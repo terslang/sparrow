@@ -16,12 +16,15 @@ This is a project which I developed to learn the mechanism of web browsers. The 
 
 I mainly take [mbrubeck/robinson](https://github.com/mbrubeck/robinson) as reference when implementing this toy browser.
 
-Each part can be both compiled to a runnable program, or a library linked by others. To compile a runnable program, goto that part and run command:
+Each part can be built using CMake. A typical build of all components looks like
+this:
 
 ```
-$ make integrate # compile the runnable program
-$ make clean # clean this directory and other dependencies
+$ mkdir build && cd build
+$ cmake ..
+$ cmake --build .
 ```
+The resulting binaries are generated inside the `build` directory.
 The dependencies are as follows, once again, each part can be run and tested independently.
 
 a) html parser: itself
