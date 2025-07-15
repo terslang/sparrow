@@ -52,7 +52,7 @@ bool StyleDomNode::match_selector(const Selector& selector, int &weight) {
 
 void StyleDomNode::trans_style(const vector<Rule>& rules) {
     struct Weight_Cmp {
-        bool operator()(const int& k1, const int& k2) {
+        bool operator()(const int& k1, const int& k2) const {
             return k1 > k2;
         }
     };

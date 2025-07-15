@@ -1,11 +1,12 @@
 #include "font_manager.h"
-#include <codecvt>                                                                                                                                                          
+#include "config.h"
+#include <codecvt>
 #include <locale>
 
 using namespace std;
 FontManager::FontManager() {
     FT_Init_FreeType(&ft_lib);
-    FT_New_Face(ft_lib, "../utils/wqy-zenhei.ttc", 0, &ft_face);
+    FT_New_Face(ft_lib, (ASSET_PATH "freefont/FreeSerif.ttf"), 0, &ft_face);
     restore_default_font_size();
 }
 

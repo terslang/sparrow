@@ -84,6 +84,7 @@ string Value::to_string() {
                             std::to_string(Color.g) + " " +
                             std::to_string(Color.b) + " " +
                             std::to_string(Color.a);
+        default: throw std::runtime_error("Unknown Value type");
     }
 }
 

@@ -20,17 +20,17 @@ typedef struct HtmlRect {
 class SdlShapeDrawer {
 protected:
     SDL_Renderer *render = nullptr;
-    SDL_Texture *white_texture = nullptr;
+    
 public:
-    SdlShapeDrawer(SDL_Renderer *render, SDL_Texture *white_texture):
-        render(render), white_texture(white_texture) {}
+    SdlShapeDrawer(SDL_Renderer *render):
+        render(render) {}
 };
 
 class SdlRectDrawer: SdlShapeDrawer {
 public:
 
-    SdlRectDrawer(SDL_Renderer *render, SDL_Texture *white_texture):
-        SdlShapeDrawer(render, white_texture) {}
+    SdlRectDrawer(SDL_Renderer *render):
+        SdlShapeDrawer(render) {}
 
     void draw(Html_Rect html_rect) {
         SDL_Color origin_color;

@@ -19,8 +19,6 @@ struct ResourcesStruct {
     SDL_Window *window;
     SDL_Renderer *render;
     SDL_Event event;
-    SDL_Surface* white_surface;
-    SDL_Texture* white_texture;
     SDL_Rect white_rect;
 
     ResourcesStruct() {
@@ -61,14 +59,7 @@ public:
             message = "render";
             goto out;
         }
-        if (!(res.white_surface = IMG_Load("./white.bmp"))) {
-            message = "white surface";
-            goto out;
-        }
-        if (!(res.white_texture = SDL_CreateTextureFromSurface(res.render, res.white_surface))) {
-            message = "white texture";
-            goto out;
-        }
+        
         SDL_RenderClear(res.render);
         SDL_SetRenderDrawBlendMode(res.render, SDL_BLENDMODE_BLEND);
 
@@ -89,12 +80,7 @@ public:
         if (res.window) {
             SDL_DestroyWindow(res.window);
         }
-        if (res.white_surface) {
-            SDL_FreeSurface(res.white_surface);
-        }
-        if (res.white_texture) {
-            SDL_DestroyTexture(res.white_texture);
-        }
+        
 
         res.clear();
     }
@@ -103,7 +89,7 @@ public:
         int wheel_offset = 0;
         bool quit = false;
     
-        SdlRectDrawer drawer(res.render, res.white_texture);
+        SdlRectDrawer drawer(res.render);
 
         while(!quit) {
             while (SDL_PollEvent(&res.event)) {
@@ -112,7 +98,8 @@ public:
                 }
             }
             SDL_Delay(100);
-            SDL_RenderCopy(res.render, res.white_texture, nullptr, &res.white_rect);
+            SDL_SetRenderDrawColor(res.render, 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderFillRect(res.render, &res.white_rect);
             for(int i = 0; i < drawer_interface.rect_list.size(); ++i) {
                 drawer.draw(drawer_interface.rect_list[i]);
             }
