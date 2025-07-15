@@ -36,11 +36,11 @@ public:
     ~FontManager();
     void set_font_size(int size);
     void restore_default_font_size();
-    tuple<int, int> get_string_width_length(wstring str);
-    void draw_string(wstring str, Font_Color color, Font_Position start_position, 
+    tuple<int, int> get_string_width_length(u32string str);
+    void draw_string(u32string str, Font_Color color, Font_Position start_position, 
         vector<Font_Draw_Info>& font_list, SDL_Renderer *render);
-    wstring convert_to_wstring(string str);
+    u32string convert_to_u32string(string str);
 private:
-    void draw_font(wchar_t ch, Font_Color color, Font_Position& position, 
+    void draw_font(char32_t ch, Font_Color color, Font_Position& position, 
         vector<Font_Draw_Info>& font_list, SDL_Renderer *render);
 };

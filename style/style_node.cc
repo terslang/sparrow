@@ -78,8 +78,8 @@ void StyleDomNode::trans_style(const vector<Rule>& rules) {
         if (const Value *tmp = find_in_map(property_map, string("font-size"))) {
             font_manager.set_font_size(tmp->to_px());
         }
-        wstring wtext = font_manager.convert_to_wstring(text);
-        tuple<int, int> wh_size = font_manager.get_string_width_length(wtext);
+        u32string u32text = font_manager.convert_to_u32string(text);
+        tuple<int, int> wh_size = font_manager.get_string_width_length(u32text);
         property_map.insert(make_pair("width", Value(make_tuple(get<0>(wh_size), "px"))));
         property_map.insert(make_pair("height", Value(make_tuple(get<1>(wh_size), "px"))));
     }

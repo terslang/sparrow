@@ -113,7 +113,7 @@ public:
                 font_manager.set_font_size(tmp->to_px());
             }
 
-            wstring text = font_manager.convert_to_wstring(node.text);
+            u32string text = font_manager.convert_to_u32string(node.text);
             font_manager.draw_string(text, 
                 Font_Color {
                     .font_color = *(SDL_Color *)(&find_in_map_or_default(node.property_map,

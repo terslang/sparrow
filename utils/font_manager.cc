@@ -2,6 +2,7 @@
 #include "config.h"
 #include <codecvt>
 #include <locale>
+#include <string_view>
 
 using namespace std;
 FontManager::FontManager() {
@@ -25,11 +26,11 @@ void FontManager::restore_default_font_size() {
     set_font_size(DEFAULT_FONT_SIZE);
 }
 
-tuple<int, int> FontManager::get_string_width_length(wstring str) {
+tuple<int, int> FontManager::get_string_width_length(u32string str) {
     if (str.size() > 0) {
         int x = 0;
         for (auto it = str.cbegin(); it != str.cend(); ++it) {
-            if (*it == ' ' || *it == '\r' || *it == '\n') {
+            if (*it == U' ' || *it == U'\r' || *it == U'\n') {
                 x += (font_size >> 2);
                 continue;
             }
@@ -42,7 +43,7 @@ tuple<int, int> FontManager::get_string_width_length(wstring str) {
     }
 }
 
-void FontManager::draw_font(wchar_t ch, Font_Color color, Font_Position& position, 
+void FontManager::draw_font(char32_t ch, Font_Color color, Font_Position& position, 
     vector<Font_Draw_Info>& font_list, SDL_Renderer *render) {
     Font_Draw_Info info;
     SDL_Surface *font_surface = nullptr;
@@ -98,7 +99,7 @@ out:
     }
 }
 
-void FontManager::draw_string(wstring str, Font_Color color, Font_Position start_position, 
+void FontManager::draw_string(u32string str, Font_Color color, Font_Position start_position, 
     vector<Font_Draw_Info>& font_list, SDL_Renderer *render)
 {
     Font_Position position = start_position;
@@ -107,7 +108,6 @@ void FontManager::draw_string(wstring str, Font_Color color, Font_Position start
     }
 }
 
-wstring FontManager::convert_to_wstring(string str) {
-    wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.from_bytes(str);
+u32string FontManager::convert_to_u32string(string str) {
+    return u32string(str.begin(), str.end());
 }

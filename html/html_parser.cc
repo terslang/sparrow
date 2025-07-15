@@ -68,6 +68,26 @@ DomNode HtmlParser::text_node() {
             return true;
         }
     });
-    return DomNode(text);
+    // Trim leading/trailing whitespace and replace multiple spaces with a single space
+    string trimmed_text;
+    bool last_char_was_space = false;
+    for (char c : text) {
+        if (isspace(c)) {
+            if (!last_char_was_space) {
+                trimmed_text += ' ';
+                last_char_was_space = true;
+            }
+        } else {
+            trimmed_text += c;
+            last_char_was_space = false;
+        }
+    }
+    if (!trimmed_text.empty() && trimmed_text[0] == ' ') {
+        trimmed_text.erase(0, 1);
+    }
+    if (!trimmed_text.empty() && trimmed_text.back() == ' ') {
+        trimmed_text.pop_back();
+    }
+    return DomNode(trimmed_text);
 }
 }
