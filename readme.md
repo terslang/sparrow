@@ -1,44 +1,56 @@
-# Overview #
+# Sparrow Browser (Fork of liutgnu's project) #
 
 ## Introduction ##
 
-This is a project which I developed to learn the mechanism of web browsers. The project contains 5 parts:
+This project, named Sparrow, is a fork of [liutgnu's web browser learning project](https://github.com/liutgnu/simple-browser-rendering-engine). Our goal is to continue development and build a functional browser. It is structured into 5 main parts:
 
-1) html parser;
-
-2) css parser;
-
-3) style generator;
-
-4) layout generator;
-
+1) HTML parser;
+2) CSS parser;
+3) Style generator;
+4) Layout generator;
 5) SDL2 painter (named *drawer* in this project);
 
-I mainly take [mbrubeck/robinson](https://github.com/mbrubeck/robinson) as reference when implementing this toy browser.
+The original project mainly took [mbrubeck/robinson](https://github.com/mbrubeck/robinson) as reference.
 
-Each part can be both compiled to a runnable program, or a library linked by others. To compile a runnable program, goto that part and run command:
+## Building the Project ##
 
+This project now uses CMake for its build system. Each part can be compiled as a standalone program or as a library.
+
+To build the project:
+
+```bash
+mkdir build
+cd build
+cmake ..
+make
 ```
-$ make integrate # compile the runnable program
-$ make clean # clean this directory and other dependencies
+
+The dependencies are as follows:
+
+*   **HTML Parser:** Self-contained.
+*   **CSS Parser:** Self-contained.
+*   **Style:** Depends on HTML and CSS.
+*   **Layout:** Depends on Style, HTML, and CSS.
+*   **Drawer:** Depends on Layout, Style, HTML, and CSS.
+
+For rendering, the project uses FreeType2 for font rendering and SDL2 for painting. Therefore, SDL2, SDL2_image, and FreeType2 should be installed.
+
+### Recent Improvements: ###
+
+*   **Improved Font Rendering:** Enhanced text rendering to correctly display various characters and handle whitespace more robustly.
+*   **Build System Migration:** The project has migrated from Makefiles to CMake, simplifying the build process.
+
+## Running the Browser ##
+
+After building the project, you can run the Sparrow browser with a test HTML and CSS file:
+
+```bash
+./build/sdl/sparrow testcase/test.html testcase/test.css
 ```
-The dependencies are as follows, once again, each part can be run and tested independently.
-
-a) html parser: itself
-
-b) css parser: itself
-
-c) style: html, css
-
-d) layout: style, html, css
-
-e) drawer: layout, style, html, css
-
-Because the browser uses freetype2 for font rendering and SDL2 for painting, SDL2, SDL2_image, freetype2 should be installed first.
 
 ## DEMO ##
 
-Let's take testcase/test.html and testcase/test.css as example. 
+Let's take testcase/test.html and testcase/test.css as example.
 
 **The output of htmlprog:**
 
@@ -54,7 +66,7 @@ $ ./htmlprog.out ../testcase/test.html
     │ ├─<ELEMENT> span
     │ │ └─<TEXT> 浏览器
     │ └─<TEXT> 演示
-    
+
     └─<ELEMENT> p
       └─<TEXT> Hello, World!
 ```
@@ -133,7 +145,7 @@ $ ./styleprog.out ../testcase/test.html ../testcase/test.css
     │ │   height: 38.000000px
     │ │   width: 90.000000px
     │ └─<TEXT> 演示
-    
+
     │   height: 21.000000px
     │   width: 52.000000px
     └─<ELEMENT> p
@@ -144,7 +156,7 @@ $ ./styleprog.out ../testcase/test.html ../testcase/test.css
       margin-bottom: 20.000000px
       width: 500.000000px
       └─<TEXT> Hello, World!
-    
+
         height: 21.000000px
         width: 111.000000px
 ```
@@ -169,7 +181,7 @@ $ ./layoutprog.out ../testcase/test.html ../testcase/test.css
     │ margin-lrtb: 0.000000 -112.000000 0.000000 20.000000
     │ border-lrtb: 4.000000 4.000000 4.000000 4.000000
     │ padding-lrtb: 0.000000 0.000000 0.000000 0.000000
-    │ └─<ELEMENT> 
+    │ └─<ELEMENT>
     │   ANONYMOUS
     │   content-xywh: 206.000000 117.000000 500.000000 38.000000
     │   margin-lrtb: 0.000000 0.000000 0.000000 0.000000
@@ -194,7 +206,7 @@ $ ./layoutprog.out ../testcase/test.html ../testcase/test.css
     │   │   border-lrtb: 0.000000 0.000000 0.000000 0.000000
     │   │   padding-lrtb: 0.000000 0.000000 0.000000 0.000000
     │   └─<TEXT> 演示
-    
+
     │     INLINE
     │     content-xywh: 328.000000 117.000000 52.000000 21.000000
     │     margin-lrtb: 0.000000 0.000000 0.000000 0.000000
@@ -206,14 +218,14 @@ $ ./layoutprog.out ../testcase/test.html ../testcase/test.css
       margin-lrtb: 0.000000 -112.000000 0.000000 20.000000
       border-lrtb: 4.000000 4.000000 4.000000 4.000000
       padding-lrtb: 0.000000 0.000000 0.000000 0.000000
-      └─<ELEMENT> 
+      └─<ELEMENT>
         ANONYMOUS
         content-xywh: 206.000000 245.000000 500.000000 21.000000
         margin-lrtb: 0.000000 0.000000 0.000000 0.000000
         border-lrtb: 0.000000 0.000000 0.000000 0.000000
         padding-lrtb: 0.000000 0.000000 0.000000 0.000000
         └─<TEXT> Hello, World!
-    
+
           INLINE
           content-xywh: 206.000000 245.000000 111.000000 21.000000
           margin-lrtb: 0.000000 0.000000 0.000000 0.000000
