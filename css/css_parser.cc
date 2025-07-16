@@ -12,7 +12,18 @@ vector<Rule> CssParser::parse_css_rules() {
         if (eof()) {
             break;
         }
-        child_list.push_back(parse_css_rule());
+        try {
+            child_list.push_back(parse_css_rule());
+        } catch (const CssParseException& e) {
+            cerr << "Warning: Skipping malformed CSS rule. " << e.what() << endl;
+            // Skip to the next rule
+            while (!eof() && !starts_with_string("}")) {
+                position++;
+            }
+            if (!eof()) {
+                position++; // Consume the '}'
+            }
+        }
     }
     return child_list;
 }
@@ -54,8 +65,7 @@ Selector CssParser::parse_selector() {
         } else if (source[position] == ',' || source[position] == '{') {
             break;
         } else {
-            cout << "unsupport selector " << source[position] << endl;
-            exit(-1);
+            throw CssParseException("Unsupported selector character: " + string(1, source[position]));
         }
     }
     return ret;
@@ -68,8 +78,19 @@ vector<Declaration> CssParser::parse_declarations() {
         if (starts_with_string("}")) {
             break;
         }
-        ret.push_back(parse_declaration());
-        skip_blank_and_advance_position_string(";");
+        try {
+            ret.push_back(parse_declaration());
+            skip_blank_and_advance_position_string(";");
+        } catch (const CssParseException& e) {
+            cerr << "Warning: Skipping malformed CSS declaration. " << e.what() << endl;
+            // Skip to the next declaration
+            while (!eof() && !starts_with_string(";")) {
+                position++;
+            }
+            if (!eof()) {
+                position++; // Consume the ';'
+            }
+        }
     }
     return ret;
 }
@@ -93,8 +114,7 @@ Declaration CssParser::parse_declaration() {
         string keyword = consume_position_loop(is_char);
         return Declaration(name, keyword);
     } else {
-        cout << "unknown declaration " << source[position] << endl;
-        exit(-1);
+        throw CssParseException("Unknown declaration starting with: " + string(1, source[position]));
     }
 }
 

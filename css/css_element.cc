@@ -41,8 +41,7 @@ Value::Value(const Value& v) {
                 v.Color.g, v.Color.b, v.Color.a));
             return;
         default:
-            cout << "error value type" << endl;
-            exit(-1);
+            throw simple_browser::CssParseException("Unknown value type");
     }
 }
 Value::Value() {}
@@ -62,8 +61,7 @@ bool Value::operator==(const Value& v) {
                     (Color.b == v.Color.b) &&
                     (Color.a == v.Color.a);
        default:
-            cout << "error value type" << endl;
-            exit(-1);
+            throw simple_browser::CssParseException("Unknown value type");
     }
 }
 
@@ -72,8 +70,8 @@ float Value::to_px() const{
         return 0;
     if (type == LENGTH && Length.unit == "px")
         return Length.data;
-    cout << "error value type to_px" << endl;
-    exit(-1);    
+    throw simple_browser::CssParseException("Invalid value type for px conversion");
+    return 0.0f;    
 }
 
 string Value::to_string() {

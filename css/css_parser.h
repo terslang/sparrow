@@ -1,5 +1,6 @@
 #pragma once
 #include "../utils/base_parser.h"
+#include "../utils/exceptions.h"
 #include "css_element.h"
 #include <iostream>
 

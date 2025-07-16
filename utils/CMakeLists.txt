@@ -1,6 +1,6 @@
 find_package(Freetype REQUIRED)
 
-add_library(utils font_manager.cc)
+add_library(utils font_manager.cc exceptions.h)
 
 target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

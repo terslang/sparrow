@@ -1,5 +1,6 @@
 #pragma once
 #include "../utils/checkers.h"
+#include "../utils/exceptions.h"
 #include <vector>
 #include <string>
 #include <tuple>

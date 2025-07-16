@@ -1,8 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "dom.h"
 #include "../utils/base_parser.h"
+#include "../utils/exceptions.h"
+#include "dom.h"
 
 using namespace std;
 using namespace simple_browser;

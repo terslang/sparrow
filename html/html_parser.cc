@@ -12,7 +12,15 @@ vector<DomNode> HtmlParser::parse_dom_nodes() {
         if (eof() || starts_with_string("</")) {
             break;
         }
-        child_list.push_back(parse_dom_node());
+        try {
+            child_list.push_back(parse_dom_node());
+        } catch (const HtmlParseException& e) {
+            cerr << "Warning: Skipping malformed HTML node. " << e.what() << endl;
+            // Skip to the next node
+            while (!eof() && !starts_with_string("<")) {
+                consume_position_loop([](char c){ return c != '<'; });
+            }
+        }
     }
     return child_list;
 }
@@ -49,7 +57,9 @@ map<string, string> HtmlParser::parse_attributes() {
         skip_blank_and_advance_position_string("=");
         advance_position_loop(is_blank);
         char quote = source[position];
-        assert(quote == '\'' || quote == '"');
+        if (quote != '\'' && quote != '"') {
+            throw HtmlParseException("Invalid attribute quote character: " + std::string(1, quote));
+        }
         skip_blank_and_advance_position_string(string(1, quote));
         string value = consume_position_loop([=](char c) -> bool {
             return (c != quote);
