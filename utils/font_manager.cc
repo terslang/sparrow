@@ -49,6 +49,10 @@ void FontManager::draw_font(char32_t ch, Font_Color color, Font_Position& positi
     SDL_Surface *font_surface = nullptr;
 
     memset(&info, sizeof(info), 0);
+    if (ch == 32 || ch == 13 || ch == 10) {
+        position.x += (font_size >> 2);
+        return;
+    }
     FT_Load_Char(ft_face, ch, FT_LOAD_RENDER);
 
     vector<unsigned char> font_buf(
