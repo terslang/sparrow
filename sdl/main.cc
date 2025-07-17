@@ -35,6 +35,7 @@ void update_layout_and_draw(simple_browser_sdldrawer::SdlDrawerInterface& drawer
                             simple_browser_html::DomNode& domNode,
                             vector<simple_browser_css::Rule>& rules,
                             int window_width, int window_height) {
+    drawer_interface.clear_drawing_lists();
     simple_browser_style::StyleDomNodeParser styleParser(domNode, rules);
     simple_browser_layout::LayoutNode root = simple_browser_layout::combine_style_dom(
         styleParser.parse_style_dom_node(styleParser.domNode, styleParser.rules, nullptr));

@@ -108,6 +108,7 @@ public:
                         int new_width = res.event.window.data1;
                         int new_height = res.event.window.data2;
                         set_window_size(new_width, new_height);
+                        SDL_RenderClear(res.render);
                         resize_callback(new_width, new_height);
                         SDL_RenderPresent(res.render);
                     }
@@ -115,7 +116,7 @@ public:
             }
             SDL_Delay(100);
             SDL_SetRenderDrawColor(res.render, 0xFF, 0xFF, 0xFF, 0xFF);
-            SDL_RenderFillRect(res.render, &res.white_rect);
+            SDL_RenderClear(res.render);
             for(int i = 0; i < drawer_interface.rect_list.size(); ++i) {
                 drawer.draw(drawer_interface.rect_list[i]);
             }

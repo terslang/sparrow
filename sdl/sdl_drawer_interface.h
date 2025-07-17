@@ -61,6 +61,11 @@ public:
     FontManager& font_manager;
     SDL_Renderer *render;
 
+    void clear_drawing_lists() {
+        rect_list.clear();
+        font_list.clear();
+    }
+
     SdlDrawerInterface(FontManager& font_manager, SDL_Renderer *render): 
         font_manager(font_manager), render(render){}
 
