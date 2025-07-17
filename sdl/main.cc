@@ -28,14 +28,25 @@ int main(int argc, char **argv)
     ss << file_html.rdbuf();
     string html_source = ss.str();
     simple_browser_html::HtmlParser htmlParser(html_source);
+    simple_browser_html::DomNode domNode;
+    try {
+        domNode = htmlParser.parse_dom_node(0);
+    } catch (const simple_browser::SparrowException& e) {
+        cerr << "Failed to parse HTML: " << e.what() << endl;
+    }
     ss.str("");
 
     ss << file_css.rdbuf();
     string css_source = ss.str();
     simple_browser_css::CssParser cssParser(css_source);
+    vector<simple_browser_css::Rule> rules;
+    try {
+        rules = cssParser.parse_css_rules();
+    } catch (const simple_browser::SparrowException& e) {
+        cerr << "Failed to parse CSS: " << e.what() << endl;
+    }
     
-    simple_browser_style::StyleDomNodeParser styleParser(
-        htmlParser.parse_dom_node(), cssParser.parse_css_rules());
+    simple_browser_style::StyleDomNodeParser styleParser(domNode, rules);
 
     simple_browser_layout::LayoutNode root = simple_browser_layout::combine_style_dom(
         styleParser.parse_style_dom_node(styleParser.domNode, styleParser.rules, nullptr));

@@ -30,9 +30,21 @@ vector<Rule> CssParser::parse_css_rules() {
 
 Rule CssParser::parse_css_rule() {
     vector<Selector> selectors = parse_selectors();
-    skip_blank_and_advance_position_string("{");
-    vector<Declaration> declarations = parse_declarations();
-    skip_blank_and_advance_position_string("}");
+    skip_blank_and_advance_position_string<CssParseException>("{");
+    vector<Declaration> declarations;
+    try {
+        declarations = parse_declarations();
+        skip_blank_and_advance_position_string<CssParseException>("}");
+    } catch (const CssParseException& e) {
+        cerr << "Warning: Malformed CSS rule. " << e.what() << endl;
+        // Attempt to recover by finding the closing brace
+        while (!eof() && !starts_with_string("}")) {
+            position++;
+        }
+        if (!eof()) {
+            skip_blank_and_advance_position_string<CssParseException>("}");
+        }
+    }
     return Rule(selectors, declarations);
 }
 
@@ -41,11 +53,19 @@ vector<Selector> CssParser::parse_selectors() {
     for(;;) {
         advance_position_loop(is_blank);
         if (starts_with_string(",")) {
-            advance_position_string(",");
+            advance_position_string<CssParseException>(",");
         }
         if (eof() || starts_with_string("{"))
             break;
-        list.push_back(parse_selector());
+        try {
+            list.push_back(parse_selector());
+        } catch (const CssParseException& e) {
+            cerr << "Warning: Skipping malformed CSS selector. " << e.what() << endl;
+            // Skip to the next selector or declaration block
+            while (!eof() && !starts_with_string(",") && !starts_with_string("{")) {
+                position++;
+            }
+        }
     }
     return list;
 }
@@ -55,10 +75,10 @@ Selector CssParser::parse_selector() {
     for (;;) {
         advance_position_loop(is_blank);
         if (source[position] == '.') {
-            advance_position_string(".");
+            advance_position_string<CssParseException>(".");
             ret.class_list.push_back(consume_position_loop(is_identifier));
         } else if (source[position] == '#') {
-            advance_position_string("#");
+            advance_position_string<CssParseException>("#");
             ret.id = consume_position_loop(is_identifier);
         } else if (is_char(source[position])) {
             ret.tag = consume_position_loop(is_identifier);
@@ -80,7 +100,7 @@ vector<Declaration> CssParser::parse_declarations() {
         }
         try {
             ret.push_back(parse_declaration());
-            skip_blank_and_advance_position_string(";");
+            skip_blank_and_advance_position_string<CssParseException>(";");
         } catch (const CssParseException& e) {
             cerr << "Warning: Skipping malformed CSS declaration. " << e.what() << endl;
             // Skip to the next declaration
@@ -97,12 +117,14 @@ vector<Declaration> CssParser::parse_declarations() {
 
 Declaration CssParser::parse_declaration() {
     string name = skip_blank_and_consume_position(is_identifier);
-    advance_position_string(":");
+    advance_position_string<CssParseException>(":");
     advance_position_loop(is_blank);
     if (starts_with_string("#")) { // color
-        advance_position_string("#");
+        advance_position_string<CssParseException>("#");
         string color = consume_position_loop(is_hex);
-        assert(color.length() == 3 || color.length() == 6);
+        if (color.length() != 3 && color.length() != 6) {
+            throw CssParseException("Invalid hex color length");
+        }
         return Declaration(name, color_trans(color));
     } else if (starts_with_string("-") || (starts_with_char_predicate(is_num))) { // length
         float data = stof(consume_position_loop([](char c) -> bool {

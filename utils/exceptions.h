@@ -15,6 +15,11 @@ protected:
     std::string msg;
 };
 
+class BaseException : public SparrowException {
+public:
+    BaseException(const std::string& message) : SparrowException(message) {}
+};
+
 class HtmlParseException : public SparrowException {
 public:
     HtmlParseException(const std::string& message) : SparrowException(message) {}

@@ -1,0 +1,15 @@
+h1 {
+  color: blue;
+}
+
+.highlight {
+  background-color: yellow;
+}
+
+#special {
+  font-style: italic;
+}
+
+div p {
+  text-decoration: underline;
+}

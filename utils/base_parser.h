@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <assert.h>
 #include "checkers.h"
+#include "exceptions.h"
 
 using namespace std;
 
@@ -49,8 +49,11 @@ class BaseParser {
         return ret;
     }
 
+    template <typename E>
     void advance_position_string(string str) {
-        assert(str == source.substr(position, str.length()));
+        if (str != source.substr(position, str.length())) {
+            throw E("Mismatched string. Expected: " + str);
+        }
         position += str.length();
     }
 
@@ -61,9 +64,10 @@ class BaseParser {
         return consume_position_loop(f);
     }
 
+    template <typename E>
     void skip_blank_and_advance_position_string(string str) {
         advance_position_loop(is_blank);
-        advance_position_string(str);
+        advance_position_string<E>(str);
     }
 };
 
