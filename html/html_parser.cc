@@ -5,6 +5,20 @@ using namespace simple_browser;
 
 namespace simple_browser_html {
 
+// Helper function to skip HTML comments
+void HtmlParser::skip_html_comment() {
+    if (starts_with_string("<!--")) {
+        advance_position_string<HtmlParseException>("<!--"); // Consume "<!--"
+        while (!eof() && !starts_with_string("-->")) {
+            position++; // Consume characters until "-->" is found
+        }
+        if (eof()) {
+            throw HtmlParseException("Unclosed HTML comment");
+        }
+        advance_position_string<HtmlParseException>("-->"); // Consume "-->"
+    }
+}
+
 vector<DomNode> HtmlParser::parse_dom_nodes(int depth) {
     if (depth > MAX_PARSE_DEPTH) {
         cerr << "Warning: Max parse depth exceeded in parse_dom_nodes. Aborting branch." << endl;
@@ -12,7 +26,16 @@ vector<DomNode> HtmlParser::parse_dom_nodes(int depth) {
     }
     vector<DomNode> child_list;
     for(;;) {
-        advance_position_loop(is_blank);
+        // Loop to skip any combination of whitespace and comments
+        for (;;) {
+            advance_position_loop(is_blank);
+            size_t old_position = position;
+            skip_html_comment();
+            if (position == old_position) {
+                break;
+            }
+        }
+
         if (eof() || starts_with_string("</")) {
             break;
         }
@@ -38,7 +61,16 @@ DomNode HtmlParser::parse_dom_node(int depth) {
     if (starts_with_string("<!DOCTYPE html>")) {
         advance_position_string<HtmlParseException>("<!DOCTYPE html>");
     }
-    advance_position_loop(is_blank);
+    // Loop to skip any combination of whitespace and comments
+    for (;;) {
+        advance_position_loop(is_blank);
+        size_t old_position = position;
+        skip_html_comment();
+        if (position == old_position) {
+            break;
+        }
+    }
+
     if (starts_with_string("<")) {
         return element_node(depth + 1);
     } else {
@@ -54,7 +86,15 @@ DomNode HtmlParser::element_node(int depth) {
     advance_position_string<HtmlParseException>("<");
     string tag_name = skip_blank_and_consume_position(is_identifier);
     map<string, string> attributes_map = parse_attributes();
-    advance_position_loop(is_blank); // Consume any whitespace after attributes and before closing tag
+    // Loop to skip any combination of whitespace and comments after attributes
+    for (;;) {
+        advance_position_loop(is_blank); // Consume any whitespace after attributes and before closing tag
+        size_t old_position = position;
+        skip_html_comment();
+        if (position == old_position) {
+            break;
+        }
+    }
 
     if (starts_with_string("/>")) {
         advance_position_string<HtmlParseException>("/>");
@@ -72,6 +112,15 @@ DomNode HtmlParser::element_node(int depth) {
     vector<DomNode> child_list;
     try {
         child_list = parse_dom_nodes(depth + 1);
+        // Loop to skip any combination of whitespace and comments before closing tag
+        for (;;) {
+            advance_position_loop(is_blank);
+            size_t old_position = position;
+            skip_html_comment();
+            if (position == old_position) {
+                break;
+            }
+        }
         advance_position_string<HtmlParseException>("</" + tag_name + ">");
     } catch (const HtmlParseException& e) {
         cerr << "Warning: Malformed element '" << tag_name << "'. " << e.what() << endl;
@@ -90,7 +139,16 @@ DomNode HtmlParser::element_node(int depth) {
 map<string, string> HtmlParser::parse_attributes() {
     map<string, string> ret;
     for (;;) {
-        advance_position_loop(is_blank);
+        // Loop to skip any combination of whitespace and comments
+        for (;;) {
+            advance_position_loop(is_blank);
+            size_t old_position = position;
+            skip_html_comment();
+            if (position == old_position) {
+                break;
+            }
+        }
+
         if (eof() || starts_with_string(">") || starts_with_string("/>")) {
             break;
         }
@@ -101,12 +159,28 @@ map<string, string> HtmlParser::parse_attributes() {
             break;
         }
 
-        advance_position_loop(is_blank); // Consume any spaces after attribute name
+        // Loop to skip any combination of whitespace and comments after attribute name
+        for (;;) {
+            advance_position_loop(is_blank); // Consume any spaces after attribute name
+            size_t old_position = position;
+            skip_html_comment();
+            if (position == old_position) {
+                break;
+            }
+        }
 
         if (starts_with_string("=")) {
             // It's a key-value attribute
             advance_position_string<HtmlParseException>("=");
-            advance_position_loop(is_blank);
+            // Loop to skip any combination of whitespace and comments after equals sign
+            for (;;) {
+                advance_position_loop(is_blank);
+                size_t old_position = position;
+                skip_html_comment();
+                if (position == old_position) {
+                    break;
+                }
+            }
             char quote = source[position];
             if (quote != '\'' && quote != '"') {
                 // Malformed attribute value, try to skip to next attribute or tag end

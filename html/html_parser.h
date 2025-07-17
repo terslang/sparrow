@@ -26,6 +26,7 @@ class HtmlParser: public BaseParser {
     private:
     bool is_self_closing(const string& tag_name) const;
     const vector<string> self_closing_tags = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"};
+    void skip_html_comment();
 };
 
 }

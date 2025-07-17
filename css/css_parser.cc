@@ -5,10 +5,33 @@ using namespace std;
 
 namespace simple_browser_css {
 
+// Helper function to skip CSS comments
+void CssParser::skip_css_comment() {
+    if (starts_with_string("/*")) {
+        advance_position_string<CssParseException>("/*"); // Consume "/*"
+        while (!eof() && !starts_with_string("*/")) {
+            position++; // Consume characters until "*/" is found
+        }
+        if (eof()) {
+            throw CssParseException("Unclosed CSS comment");
+        }
+        advance_position_string<CssParseException>("*/"); // Consume "*/"
+    }
+}
+
 vector<Rule> CssParser::parse_css_rules() {
     vector<Rule> child_list;
     for(;;) {
-        advance_position_loop(is_blank);
+        // Loop to skip any combination of whitespace and comments
+        for (;;) {
+            advance_position_loop(is_blank); // Skip whitespace
+            size_t old_position = position;
+            skip_css_comment(); // Skip comments
+            if (position == old_position) { // No whitespace or comment was skipped
+                break;
+            }
+        }
+
         if (eof()) {
             break;
         }
@@ -51,10 +74,29 @@ Rule CssParser::parse_css_rule() {
 vector<Selector> CssParser::parse_selectors() {
     vector<Selector> list;
     for(;;) {
-        advance_position_loop(is_blank);
+        // Loop to skip any combination of whitespace and comments
+        for (;;) {
+            advance_position_loop(is_blank); // Skip whitespace
+            size_t old_position = position;
+            skip_css_comment(); // Skip comments
+            if (position == old_position) { // No whitespace or comment was skipped
+                break;
+            }
+        }
+
         if (starts_with_string(",")) {
             advance_position_string<CssParseException>(",");
         }
+        // Loop to skip any combination of whitespace and comments after comma
+        for (;;) {
+            advance_position_loop(is_blank); // Skip whitespace
+            size_t old_position = position;
+            skip_css_comment(); // Skip comments
+            if (position == old_position) { // No whitespace or comment was skipped
+                break;
+            }
+        }
+
         if (eof() || starts_with_string("{"))
             break;
         try {
@@ -73,7 +115,16 @@ vector<Selector> CssParser::parse_selectors() {
 Selector CssParser::parse_selector() {
     Selector ret;
     for (;;) {
-        advance_position_loop(is_blank);
+        // Loop to skip any combination of whitespace and comments
+        for (;;) {
+            advance_position_loop(is_blank); // Skip whitespace
+            size_t old_position = position;
+            skip_css_comment(); // Skip comments
+            if (position == old_position) { // No whitespace or comment was skipped
+                break;
+            }
+        }
+
         if (source[position] == '.') {
             advance_position_string<CssParseException>(".");
             ret.class_list.push_back(consume_position_loop(is_identifier));
@@ -94,7 +145,16 @@ Selector CssParser::parse_selector() {
 vector<Declaration> CssParser::parse_declarations() {
     vector<Declaration> ret;
     for (;;) {
-        advance_position_loop(is_blank);
+        // Loop to skip any combination of whitespace and comments
+        for (;;) {
+            advance_position_loop(is_blank); // Skip whitespace
+            size_t old_position = position;
+            skip_css_comment(); // Skip comments
+            if (position == old_position) { // No whitespace or comment was skipped
+                break;
+            }
+        }
+
         if (starts_with_string("}")) {
             break;
         }
@@ -118,7 +178,16 @@ vector<Declaration> CssParser::parse_declarations() {
 Declaration CssParser::parse_declaration() {
     string name = skip_blank_and_consume_position(is_identifier);
     advance_position_string<CssParseException>(":");
-    advance_position_loop(is_blank);
+    // Loop to skip any combination of whitespace and comments
+    for (;;) {
+        advance_position_loop(is_blank); // Skip whitespace
+        size_t old_position = position;
+        skip_css_comment(); // Skip comments
+        if (position == old_position) { // No whitespace or comment was skipped
+            break;
+        }
+    }
+
     if (starts_with_string("#")) { // color
         advance_position_string<CssParseException>("#");
         string color = consume_position_loop(is_hex);

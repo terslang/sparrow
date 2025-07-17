@@ -1,15 +1,18 @@
+/* This is a comment for h1 styles */
 h1 {
-  color: blue;
+  color: #0000ff;
+  font-size: 32px;
+  margin-top: 11px;
+  margin-bottom: 11px;
 }
 
+/* This is a comment for div styles */
+div {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+/* This is a comment for highlight class */
 .highlight {
-  background-color: yellow;
-}
-
-#special {
-  font-style: italic;
-}
-
-div p {
-  text-decoration: underline;
+  background: #ffff00;
 }

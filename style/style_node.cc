@@ -51,6 +51,10 @@ bool StyleDomNode::match_selector(const Selector& selector, int &weight) {
 }
 
 void StyleDomNode::trans_style(const vector<Rule>& rules) {
+    if (tag_name == "title") {
+        property_map.insert(make_pair("display", Value("none")));
+    }
+
     struct Weight_Cmp {
         bool operator()(const int& k1, const int& k2) const {
             return k1 > k2;

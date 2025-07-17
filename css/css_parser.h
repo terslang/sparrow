@@ -21,5 +21,8 @@ class CssParser: public BaseParser {
     vector<Declaration> parse_declarations();
     Declaration parse_declaration();
     tuple<uint8_t, uint8_t, uint8_t, uint8_t> color_trans(string& hex_color);
+
+private:
+    void skip_css_comment();
 };
 }
