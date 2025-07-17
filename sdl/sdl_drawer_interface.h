@@ -21,12 +21,13 @@ SDL_Rect convert_from_layout_rect(simple_browser_layout::Rect rect)
 
 SDL_Color convert_from_css_color(simple_browser_css::Value value)
 {
-    assert(value.type == COLOR);
+    assert(holds_alternative<simple_browser_css::Color>(value.data));
+    const simple_browser_css::Color& color = get<simple_browser_css::Color>(value.data);
     return SDL_Color {
-        .r = value.Color.r,
-        .g = value.Color.g,
-        .b = value.Color.b,
-        .a = value.Color.a,
+        .r = color.r,
+        .g = color.g,
+        .b = color.b,
+        .a = color.a,
     };
 }
 
@@ -116,10 +117,10 @@ public:
             u32string text = font_manager.convert_to_u32string(node.text);
             font_manager.draw_string(text, 
                 Font_Color {
-                    .font_color = *(SDL_Color *)(&find_in_map_or_default(node.property_map,
-                        make_string_vector(1, "color"), &black_color)->Color),
-                    .background_color = *(SDL_Color *)(&find_in_map_or_default(node.property_map,
-                        make_string_vector(1, "background"), &transparent_color)->Color),
+                    .font_color = convert_from_css_color(*find_in_map_or_default(node.property_map,
+                        make_string_vector(1, "color"), &black_color)),
+                    .background_color = convert_from_css_color(*find_in_map_or_default(node.property_map,
+                        make_string_vector(1, "background"), &transparent_color)),
                 }, 
                 Font_Position {
                     .x = content_rect.rect.x,

@@ -18,72 +18,36 @@ string Selector::to_string() {
     return ret;
 }
 
-Value::Value(const string& kwd): type(KEYWORD) {
-    new(&this->Keyword.keyword) string(kwd);
-}
-Value::Value(const tuple<float, string>& length): type(LENGTH) {
-    Length.data = get<0>(length);
-    new(&this->Length.unit) string(get<1>(length));
-}
-Value::Value(const tuple<uint8_t, uint8_t, uint8_t, uint8_t>& color): type(COLOR) {
-    tie(Color.r, Color.g, Color.b, Color.a) = color;
-}
-Value::Value(const Value& v) {
-    switch (v.type) {
-        case KEYWORD:
-            new(this) Value(v.Keyword.keyword);
-            return;
-        case LENGTH:
-            new(this) Value(make_tuple(v.Length.data, v.Length.unit));
-            return;
-        case COLOR:
-            new(this) Value(make_tuple(v.Color.r, 
-                v.Color.g, v.Color.b, v.Color.a));
-            return;
-        default:
-            throw simple_browser::CssParseException("Unknown value type");
-    }
-}
-Value::Value() {}
-Value::~Value() {}
 
-bool Value::operator==(const Value& v) {
-    if (type != v.type)
-        return false;
-    switch (v.type) {
-        case LENGTH:
-            return (Length.data == v.Length.data) && (Length.unit == v.Length.unit);
-        case KEYWORD:
-            return Keyword.keyword == v.Keyword.keyword;
-        case COLOR:
-            return (Color.r == v.Color.r) &&
-                    (Color.g == v.Color.g) &&
-                    (Color.b == v.Color.b) &&
-                    (Color.a == v.Color.a);
-       default:
-            throw simple_browser::CssParseException("Unknown value type");
-    }
+
+bool Value::operator==(const Value& other) const {
+    return data == other.data;
 }
 
-float Value::to_px() const{
-    if (type == KEYWORD && Keyword.keyword == "auto")
+float Value::to_px() const {
+    if (holds_alternative<Keyword>(data) && get<Keyword>(data).keyword == "auto")
         return 0;
-    if (type == LENGTH && Length.unit == "px")
-        return Length.data;
+    if (holds_alternative<Length>(data) && get<Length>(data).unit == "px")
+        return get<Length>(data).data;
     throw simple_browser::CssParseException("Invalid value type for px conversion");
-    return 0.0f;    
 }
 
-string Value::to_string() {
-    switch(type) {
-        case KEYWORD: return Keyword.keyword;
-        case LENGTH: return std::to_string(Length.data) + Length.unit;
-        case COLOR: return std::to_string(Color.r) + " " +
-                            std::to_string(Color.g) + " " +
-                            std::to_string(Color.b) + " " +
-                            std::to_string(Color.a);
-        default: throw std::runtime_error("Unknown Value type");
-    }
+string Value::to_string() const {
+    return visit([](auto&& arg) -> string {
+        using T = decay_t<decltype(arg)>;
+        if constexpr (is_same_v<T, Keyword>) {
+            return arg.keyword;
+        } else if constexpr (is_same_v<T, Length>) {
+            return std::to_string(arg.data) + arg.unit;
+        } else if constexpr (is_same_v<T, Color>) {
+            return std::to_string(arg.r) + " " +
+                   std::to_string(arg.g) + " " +
+                   std::to_string(arg.b) + " " +
+                   std::to_string(arg.a);
+        } else {
+            throw std::runtime_error("Unknown Value type");
+        }
+    }, data);
 }
 
 

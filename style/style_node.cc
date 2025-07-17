@@ -105,9 +105,12 @@ void StyleDomNode::print_property_map(int32_t depth, bool is_last_child, vector<
 string StyleDomNode::display() const {
     const Value* value = find_in_map(property_map, string("display"));
     if (value) {
-        if (value->Keyword.keyword == "block" || value->Keyword.keyword == "none" ||
-            value->Keyword.keyword == "inline") {
-            return value->Keyword.keyword;
+        if (holds_alternative<Keyword>(value->data)) {
+            const Keyword& keyword_val = get<Keyword>(value->data);
+            if (keyword_val.keyword == "block" || keyword_val.keyword == "none" ||
+                keyword_val.keyword == "inline") {
+                return keyword_val.keyword;
+            }
         }
         assert(false); // wrong display property
     }

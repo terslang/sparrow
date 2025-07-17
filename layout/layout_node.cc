@@ -136,8 +136,8 @@ void calculate_block_node_width(LayoutNode& node, const Box& container_box) {
         width_ma_R = overflow / 2.0;
         width_ma_L = overflow / 2.0;
     } else if (get<1>(result) == true) {  // (~, true, ~)
-        width_ma_L = auto_value == *margin_left ? 0 : margin_left->Length.data;
-        width_ma_R = auto_value == *margin_right ? 0 : margin_right->Length.data;
+        width_ma_L = auto_value == *margin_left ? 0 : get<Length>(margin_left->data).data;
+        width_ma_R = auto_value == *margin_right ? 0 : get<Length>(margin_right->data).data;
         if (overflow >= 0) {
             width_ma_ = overflow;
         } else {

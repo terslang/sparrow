@@ -6,6 +6,7 @@
 #include <tuple>
 #include <iostream>
 #include <cstdint>
+#include <variant>
 
 using namespace std;
 
@@ -21,11 +22,13 @@ struct Selector {
 
 struct Keyword {
     string keyword;
+    bool operator==(const Keyword& other) const { return keyword == other.keyword; }
 };
 
 struct Length {
     float data;
     string unit;
+    bool operator==(const Length& other) const { return data == other.data && unit == other.unit; }
 };
 
 struct Color {
@@ -33,6 +36,7 @@ struct Color {
     uint8_t g;
     uint8_t b;
     uint8_t a;    
+    bool operator==(const Color& other) const { return r == other.r && g == other.g && b == other.b && a == other.a; }
 };
 
 enum ValueType {
@@ -43,34 +47,16 @@ enum ValueType {
 
 struct Value {
     ValueType type;    
-    union {
-        struct {
-            string keyword;            
-        } Keyword;
+    std::variant<Keyword, Length, Color> data;
 
-        struct {
-            float data;
-            string unit;
-        } Length;
+    Value(const string& kwd) : data(Keyword{kwd}) {}
+    Value(const tuple<float, string>& length) : data(Length{get<0>(length), get<1>(length)}) {}
+    Value(const tuple<uint8_t, uint8_t, uint8_t, uint8_t>& color) : data(Color{get<0>(color), get<1>(color), get<2>(color), get<3>(color)}) {}
+    Value() : data(Keyword{""}) {} // Default constructor
 
-        struct {
-            uint8_t r;
-            uint8_t g;
-            uint8_t b;
-            uint8_t a;    
-        } Color;
-    };
-
-    Value(const string& kwd);
-    Value(const tuple<float, string>& length);
-    Value(const tuple<uint8_t, uint8_t, uint8_t, uint8_t>& color);
-    Value(const Value& v);
-    Value();
-    ~Value();
-
-    bool operator==(const Value& v);
+    bool operator==(const Value& other) const;
     float to_px() const;
-    string to_string();
+    string to_string() const;
 };
 
 struct Declaration {

@@ -12,6 +12,24 @@
 
 using namespace std;
 
+
+vector<string> collect_css_links(const simple_browser_html::DomNode& node) {
+    vector<string> css_links;
+    if (node.type == simple_browser_html::ELEMENT && node.tag_name == "link") {
+        auto rel_it = node.attributes.find("rel");
+        auto href_it = node.attributes.find("href");
+        if (rel_it != node.attributes.end() && rel_it->second == "stylesheet" &&
+            href_it != node.attributes.end()) {
+            css_links.push_back(href_it->second);
+        }
+    }
+    for (const auto& child : node.child_list) {
+        vector<string> child_links = collect_css_links(child);
+        css_links.insert(css_links.end(), child_links.begin(), child_links.end());
+    }
+    return css_links;
+}
+
 void update_layout_and_draw(simple_browser_sdldrawer::SdlDrawerInterface& drawer_interface,
                             simple_browser_sdldrawer::SdlDrawer& sdlDrawer,
                             simple_browser_html::DomNode& domNode,
@@ -45,14 +63,13 @@ void update_layout_and_draw(simple_browser_sdldrawer::SdlDrawerInterface& drawer
 
 int main(int argc, char **argv)
 {
-    if (argc != 3) {
-        cout << "useage: ./a.out <html_file> <css_file>" << endl;
+    if (argc != 2) {
+        cout << "usage: ./sparrow <html_file>" << endl;
         return -1;
     }
     ifstream file_html(argv[1]);
-    ifstream file_css(argv[2]);
-    if (!file_html || !file_css) {
-        cout << "open file error" << endl;
+    if (!file_html) {
+        cout << "open html file error" << endl;
         return -1;
     }
     stringstream ss;
@@ -65,16 +82,29 @@ int main(int argc, char **argv)
     } catch (const simple_browser::SparrowException& e) {
         cerr << "Failed to parse HTML: " << e.what() << endl;
     }
-    ss.str("");
-
-    ss << file_css.rdbuf();
-    string css_source = ss.str();
-    simple_browser_css::CssParser cssParser(css_source);
     vector<simple_browser_css::Rule> rules;
-    try {
-        rules = cssParser.parse_css_rules();
-    } catch (const simple_browser::SparrowException& e) {
-        cerr << "Failed to parse CSS: " << e.what() << endl;
+
+    vector<string> css_links = collect_css_links(domNode);
+    for (const string& css_link : css_links) {
+        string html_file_path = argv[1];
+        string html_dir = html_file_path.substr(0, html_file_path.find_last_of("/") + 1);
+        string css_file_path = html_dir + css_link;
+
+        ifstream file_css(css_file_path);
+        if (!file_css) {
+            cerr << "Failed to open CSS file: " << css_file_path << endl;
+            continue;
+        }
+        stringstream ss_css;
+        ss_css << file_css.rdbuf();
+        string css_source = ss_css.str();
+        simple_browser_css::CssParser cssParser(css_source);
+        try {
+            vector<simple_browser_css::Rule> new_rules = cssParser.parse_css_rules();
+            rules.insert(rules.end(), new_rules.begin(), new_rules.end());
+        } catch (const simple_browser::SparrowException& e) {
+            cerr << "Failed to parse CSS from " << css_file_path << ": " << e.what() << endl;
+        }
     }
     
     simple_browser_sdldrawer::SdlDrawer sdlDrawer(WINDOW_WIDTH, WINDOW_HEIGHT);
