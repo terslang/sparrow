@@ -8,6 +8,7 @@
 #include <locale>
 #include <vector>
 #include <iostream>
+#include <functional>
 #include "shape_drawer.h"
 #include "sdl_drawer_interface.h"
 #include <unistd.h>
@@ -41,6 +42,13 @@ public:
     window_width(window_width), window_height(window_height) {
         SDL_Init(SDL_INIT_VIDEO);
     }
+
+    void set_window_size(int width, int height) {
+        window_width = width;
+        window_height = height;
+        res.white_rect.w = width;
+        res.white_rect.h = height;
+    }
     ~SdlDrawer() {
         release_sdldrawer();
         SDL_Quit();
@@ -51,7 +59,7 @@ public:
 
         if (!(res.window = SDL_CreateWindow("My Awesome Browser", 
             SDL_WINDOWPOS_CENTERED, 0,
-            window_width, window_height, SDL_WINDOW_SHOWN))) {
+            window_width, window_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE))) {
             message = "window";
             goto out;
         }
@@ -85,7 +93,7 @@ public:
         res.clear();
     }
 
-    void run_sdldrawer(const SdlDrawerInterface& drawer_interface) {
+    void run_sdldrawer(const SdlDrawerInterface& drawer_interface, std::function<void(int, int)> resize_callback) {
         int wheel_offset = 0;
         bool quit = false;
     
@@ -95,6 +103,14 @@ public:
             while (SDL_PollEvent(&res.event)) {
                 if (res.event.type == SDL_QUIT) {
                     quit = true;
+                } else if (res.event.type == SDL_WINDOWEVENT) {
+                    if (res.event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                        int new_width = res.event.window.data1;
+                        int new_height = res.event.window.data2;
+                        set_window_size(new_width, new_height);
+                        resize_callback(new_width, new_height);
+                        SDL_RenderPresent(res.render);
+                    }
                 }
             }
             SDL_Delay(100);
