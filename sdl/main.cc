@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "config.h"
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
@@ -84,6 +85,23 @@ int main(int argc, char **argv)
         cerr << "Failed to parse HTML: " << e.what() << endl;
     }
     vector<simple_browser_css::Rule> rules;
+
+    // Load user-agent stylesheet
+    ifstream file_user_agent_css(USER_AGENT_CSS_PATH);
+    if (file_user_agent_css) {
+        stringstream ss_user_agent_css;
+        ss_user_agent_css << file_user_agent_css.rdbuf();
+        string user_agent_css_source = ss_user_agent_css.str();
+        simple_browser_css::CssParser userAgentCssParser(user_agent_css_source);
+        try {
+            vector<simple_browser_css::Rule> user_agent_rules = userAgentCssParser.parse_css_rules();
+            rules.insert(rules.end(), user_agent_rules.begin(), user_agent_rules.end());
+        } catch (const simple_browser::SparrowException& e) {
+            cerr << "Failed to parse user-agent CSS: " << e.what() << endl;
+        }
+    } else {
+        cerr << "Warning: Could not open user-agent stylesheet: " << USER_AGENT_CSS_PATH << endl;
+    }
 
     vector<string> css_links = collect_css_links(domNode);
     for (const string& css_link : css_links) {

@@ -1,0 +1,26 @@
+html {
+    display: block;
+}
+
+body {
+    display: block;
+    font-size: 16px;
+}
+
+h1 {
+    display: block;
+    font-size: 32px; /* 2em * 16px = 32px */
+}
+
+div {
+    display: block;
+}
+
+p {
+    display: block;
+}
+
+/* Default colors */
+html, body, div, p, h1 {
+    color: #000000; /* Black text */
+}

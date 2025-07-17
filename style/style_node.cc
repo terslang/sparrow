@@ -52,28 +52,30 @@ bool StyleDomNode::match_selector(const Selector& selector, int &weight) {
 
 void StyleDomNode::trans_style(const vector<Rule>& rules) {
     if (tag_name == "title") {
-        property_map.insert(make_pair("display", Value("none")));
+        property_map.insert_or_assign("display", Value("none"));
     }
 
-    struct Weight_Cmp {
-        bool operator()(const int& k1, const int& k2) const {
-            return k1 > k2;
-        }
-    };
-    map<int, vector<Declaration>, Weight_Cmp> selector_priority_map;
+    // Store properties with their weights
+    map<string, pair<Value, int>> final_properties; // property_name -> {value, weight}
 
-    for (int i = 0; i < rules.size(); ++i) {
-        for (int j = 0; j < rules[i].selectors.size(); ++j) {
-            int tmp;
-            if (match_selector(rules[i].selectors[j], tmp)) {
-                selector_priority_map.insert(make_pair(tmp, rules[i].declarations));
+    for (const auto& rule : rules) { // Iterate through rules in order (user-agent then author)
+        for (const auto& selector : rule.selectors) {
+            int current_weight = 0;
+            if (match_selector(selector, current_weight)) {
+                for (const auto& declaration : rule.declarations) {
+                    auto it = final_properties.find(declaration.name);
+                    if (it == final_properties.end() || current_weight >= it->second.second) {
+                        // If property not set, or current rule has higher/equal specificity
+                        final_properties[declaration.name] = make_pair(declaration.value, current_weight);
+                    }
+                }
             }
         }
     }
-    for (auto it = selector_priority_map.begin(); it != selector_priority_map.end(); ++it) {
-        for (int i = 0; i < it->second.size(); ++i) {
-            property_map.insert(make_pair(it->second[i].name, it->second[i].value));
-        }
+
+    // Transfer final properties to property_map
+    for (const auto& entry : final_properties) {
+        property_map.insert_or_assign(entry.first, entry.second.first);
     }
     
 /////////for test

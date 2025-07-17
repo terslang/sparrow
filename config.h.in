@@ -1,3 +1,4 @@
 #pragma once
 
 #define ASSET_PATH "@APP_ASSETS_PATH@/fonts/"
+#define USER_AGENT_CSS_PATH "@APP_ASSETS_PATH@/css/user_agent.css"
